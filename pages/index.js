@@ -1,6 +1,46 @@
 import Head from 'next/head'
+import * as firebase from "firebase/app";
+import "firebase/auth";
+import { useState } from 'react';
+
+const firebaseConfig = {
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  databaseURL: process.env.FIREBASE_DATABASE_URL,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID,
+  measurementId: process.env.FIREBASE_MEASUREMENT_ID
+};
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig)
+}
 
 export default function Home() {
+  const [account, setAccont] = useState(undefined)
+  function signInWithTwitter() {
+    const provider = new firebase.auth.TwitterAuthProvider();
+    firebase.auth().signInWithPopup(provider).then(function (result) {
+      const token = result.credential.accessToken;
+      const secret = result.credential.secret;
+      const user = result.user;
+      setAccont({
+        token: token,
+        secret: secret,
+        user: user
+      })
+    }).catch(function (error) {
+      console.log(error.code, error.message)
+    });
+  }
+  function signOut() {
+    firebase.auth().signOut().then(function () {
+      setAccont(undefined);
+    }).catch(function (error) {
+      console.log(error.code, error.message)
+    })
+  }
   return (
     <div className="container">
       <Head>
@@ -10,7 +50,8 @@ export default function Home() {
 
       <main>
         <h1 className="title">
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
+          {account ? `Welcome to ${account.user.displayName}` : `Welcome to Twitter Auto Growth !`}
+          {account ? <button onClick={signOut}>Sign Out</button> : <button onClick={signInWithTwitter}>Twitter SignIn</button>}
         </h1>
 
         <p className="description">
