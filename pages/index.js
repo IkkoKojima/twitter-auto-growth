@@ -3,7 +3,6 @@ import "firebase/auth";
 import { useState } from 'react'
 import Header from '../components/Header'
 
-
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
   authDomain: process.env.FIREBASE_AUTH_DOMAIN,
@@ -51,7 +50,7 @@ export default function SignInOut() {
 
   async function autoFavorite(inputKeyword) {
     if (inputKeyword && credential) {
-      const response = await fetch(`http://localhost:3000/api/auto_favorite/${inputKeyword}?twitter_access_token_key=${credential.token}&twitter_access_token_secret=${credential.secret}`)
+      const response = await fetch(`${window.location.origin}/api/auto_favorite/${inputKeyword}?twitter_access_token_key=${credential.token}&twitter_access_token_secret=${credential.secret}`)
       const data = await response.json()
       setResponse(data)
     }

@@ -12,7 +12,6 @@ export default function (req, res) {
     client.get('search/tweets', { q: keyword, count: 10 }).then(function (tweets) {
         for (var tweet of tweets.statuses) {
             client.post('favorites/create', { id: tweet.id_str }).then(function (tweet) {
-                console.log({ user: tweet.user.name, text: tweet.text })
                 likedTweets.push({ user: tweet.user.name, text: tweet.text })
             }).catch(function (err) {
                 console.log("error:" + err.message)
