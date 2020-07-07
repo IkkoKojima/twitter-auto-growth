@@ -10,8 +10,11 @@
   "dependencies": {
     "firebase": "^7.15.1",
     "next": "9.4.4",
+    "normalize.css": "^8.0.1",
     "react": "16.13.1",
     "react-dom": "16.13.1",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^0.88.2",
     "twitter": "^1.7.1"
   }
 }

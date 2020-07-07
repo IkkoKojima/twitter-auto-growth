@@ -1,3 +1,5 @@
+import { Button, Icon } from 'semantic-ui-react'
+
 export default function SignInOutButton({
     signedInUser,
     signInWithTwitter,
@@ -5,8 +7,8 @@ export default function SignInOutButton({
 }) {
     return signedInUser ?
         <div>
-            <button onClick={signOut}>SignOut</button>
+            <Button secondary yarn add semantic-ui-css onClick={signOut}>サインアウト</Button>
         </div> :
-        <button onClick={signInWithTwitter}>SignIn</button>
+        <Button secondary onClick={signInWithTwitter}><Icon name='twitter' />Twitterでサインイン</Button>
 
 }
