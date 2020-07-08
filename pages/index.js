@@ -53,8 +53,10 @@ export default function SignInOut() {
   async function autoFavorite(inputKeyword) {
     if (inputKeyword && credential) {
       setKeyword("")
-      const response = await fetch(`${window.location.origin}/api/auto_favorite/${inputKeyword}?twitter_access_token_key=${credential.token}&twitter_access_token_secret=${credential.secret}`)
+      const response = await fetch(`${window.location.origin}/api/auto_favorites?keyword=${inputKeyword}&twitter_access_token_key=${credential.token}&twitter_access_token_secret=${credential.secret}`)
       if (response.ok) {
+        const data = await response.json()
+        console.log(data.message)
         setMessage(1)
       } else {
         setMessage(-1)
@@ -98,12 +100,12 @@ export default function SignInOut() {
       <Grid.Row>
         <AppHeader signedInUser={user} signInWithTwitter={signInWithTwitter} signOut={signOut} />
       </Grid.Row>
-      <Grid.Row>
+      <Grid.Row style={{ margin: "20px 0 0" }}>
         {user ?
           <Grid verticalAlign="top" textAlign="center" columns='equal' stackable>
             <Grid.Row>
               <Card>
-                <Image src={user.photoURL} wrapped ui={false} />
+                <Image src={user.photoURL.replace("_normal", "")} wrapped ui={false} />
                 <Card.Content>
                   <Card.Header>{user.displayName}</Card.Header>
                 </Card.Content>

@@ -9,14 +9,16 @@ export default function (req, res) {
         access_token_key: twitter_access_token_key,
         access_token_secret: twitter_access_token_secret
     })
-    client.get('search/tweets', { q: keyword, count: 10 }).then(function (tweets) {
+    async function favTweets(keyword, num) {
+        var favTweets = []
+        const tweets = await client.get('search/tweets', { q: keyword, count: num })
         for (var tweet of tweets.statuses) {
-            client.post('favorites/create', { id: tweet.id_str }).then(function (tweet) {
-                likedTweets.push({ user: tweet.user.name, text: tweet.text })
-            }).catch(function (err) {
-                console.log("error:" + err.message)
-            })
+            const fav = await client.post('favorites/create', { id: tweet.id_str })
+            favTweets.push(await fav.text)
         }
-    });
+        return favTweets
+    }
+    const ftl = favTweets(keyword, 1)
+    ftl.then(r => console.log(r)).catch(e => console.log(e))
     res.status(200).json({ message: "done" })
 }
