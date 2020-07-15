@@ -14,11 +14,13 @@ export default function (req, res) {
         const tweets = await client.get('search/tweets', { q: keyword, count: num })
         for (var tweet of tweets.statuses) {
             const fav = await client.post('favorites/create', { id: tweet.id_str })
-            favTweets.push(await fav.text)
+            favTweets.push(await fav)
+            console.log(await fav)
         }
         return favTweets
     }
-    const ftl = favTweets(keyword, 1)
-    ftl.then(r => console.log(r)).catch(e => console.log(e))
-    res.status(200).json({ message: "done" })
+    const ftl = favTweets(keyword, 5)
+    ftl
+        .then(r => res.status(200).json({ message: r }))
+        .catch(e => res.status(400).json({ message: e.message }))
 }

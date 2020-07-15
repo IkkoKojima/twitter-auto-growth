@@ -2,7 +2,7 @@ import * as firebase from "firebase/app";
 import "firebase/auth";
 import { useState } from 'react'
 import AppHeader from '../components/AppHeader'
-import { Card, Image, Message, Form, Button, Grid } from 'semantic-ui-react'
+import { Card, Image, Message, Form, Button, Grid, Feed } from 'semantic-ui-react'
 
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
@@ -21,7 +21,7 @@ if (!firebase.apps.length) {
 export default function SignInOut() {
   const [user, setUser] = useState(undefined)
   const [keyword, setKeyword] = useState("")
-  const [response, setResponse] = useState([])
+  const [response, setResponse] = useState(undefined)
   const [credential, setCredential] = useState(undefined)
   const [message, setMessage] = useState(0)
   // firebase.auth().onAuthStateChanged((user) => { user ? setUser(user) & console.log(user) : setUser(undefined) });
@@ -57,6 +57,7 @@ export default function SignInOut() {
       if (response.ok) {
         const data = await response.json()
         console.log(data.message)
+        setResponse(data.message)
         setMessage(1)
       } else {
         setMessage(-1)
@@ -95,6 +96,32 @@ export default function SignInOut() {
     )
   }
 
+  const displayResponse = () => {
+    return response ?
+      <Card>
+        <Card.Content>
+          <Card.Header>いいねしたツイート</Card.Header>
+        </Card.Content>
+        <Card.Content>
+          <Feed>
+            {response.map(r =>
+              <Feed.Event>
+                <Feed.Label image={r.user.profile_image_url} />
+                <Feed.Content>
+                  <Feed.User content={<a href={'https://twitter.com/' + r.user.screen_name}>{r.user.name}</a>} />
+                  <Feed.Date content={r.created_at} />
+                  <Feed.Summary>
+                    {r.text}
+                  </Feed.Summary>
+                </Feed.Content>
+              </Feed.Event>
+            )}
+          </Feed>
+        </Card.Content>
+      </Card>
+      : <div />
+  }
+
   return (
     <Grid verticalAlign="middle" textAlign="center" columns='equal'>
       <Grid.Row>
@@ -124,6 +151,9 @@ export default function SignInOut() {
                   <Button color="twitter" onClick={() => { autoFavorite(keyword) }}>いいね</Button>
                 </Form>
               </Grid.Column>
+            </Grid.Row>
+            <Grid.Row>
+              {displayResponse()}
             </Grid.Row>
           </Grid>
           :
