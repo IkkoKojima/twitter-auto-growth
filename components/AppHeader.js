@@ -12,10 +12,7 @@ export default function AppHeader({
             <Grid.Row>
                 <Grid.Column>
                     <Header as="h1" style={{ margin: "30px 0 0 0", color: "white" }}>
-                        <Icon.Group size="big">
-                            <Icon fitted size="big" loading name="setting" />
-                            <Icon fitted size="mini" name="heart" />
-                        </Icon.Group>
+                        <Icon name="twitter" />
                         Twitter 自動いいね君
                     </Header>
                 </Grid.Column>

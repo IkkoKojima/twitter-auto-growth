@@ -15,7 +15,6 @@ export default function (req, res) {
         for (var tweet of tweets.statuses) {
             const fav = await client.post('favorites/create', { id: tweet.id_str })
             favTweets.push(await fav)
-            console.log(await fav)
         }
         return favTweets
     }

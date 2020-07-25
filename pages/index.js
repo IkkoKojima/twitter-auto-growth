@@ -2,7 +2,7 @@ import * as firebase from "firebase/app";
 import "firebase/auth";
 import { useState } from 'react'
 import AppHeader from '../components/AppHeader'
-import { Card, Image, Message, Form, Button, Grid, Feed } from 'semantic-ui-react'
+import { Card, Image, Message, Form, Button, Grid, Feed, Loader, Dimmer } from 'semantic-ui-react'
 
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
@@ -24,6 +24,7 @@ export default function SignInOut() {
   const [response, setResponse] = useState(undefined)
   const [credential, setCredential] = useState(undefined)
   const [message, setMessage] = useState(0)
+  const [loading, setLoading] = useState(false)
   // firebase.auth().onAuthStateChanged((user) => { user ? setUser(user) & console.log(user) : setUser(undefined) });
 
   // function signInWithTwitter() {
@@ -53,7 +54,9 @@ export default function SignInOut() {
   async function autoFavorite(inputKeyword) {
     if (inputKeyword && credential) {
       setKeyword("")
-      const response = await fetch(`${window.location.origin}/api/auto_favorites?keyword=${inputKeyword}&twitter_access_token_key=${credential.token}&twitter_access_token_secret=${credential.secret}`)
+      const url = `${window.location.origin}/api/auto_favorites?keyword=${encodeURIComponent(inputKeyword)}&twitter_access_token_key=${credential.token}&twitter_access_token_secret=${credential.secret}`
+      setLoading(true)
+      const response = await fetch(url)
       if (response.ok) {
         const data = await response.json()
         console.log(data.message)
@@ -62,6 +65,7 @@ export default function SignInOut() {
       } else {
         setMessage(-1)
       }
+      setLoading(false)
     }
   }
 
@@ -122,6 +126,13 @@ export default function SignInOut() {
       : <div />
   }
 
+  const loadingNow = () => {
+    return loading ?
+      <Loader active inline size='massive'>自動いいね中</Loader>
+      :
+      <div />
+  }
+
   return (
     <Grid verticalAlign="middle" textAlign="center" columns='equal'>
       <Grid.Row>
@@ -151,6 +162,9 @@ export default function SignInOut() {
                   <Button color="twitter" onClick={() => { autoFavorite(keyword) }}>いいね</Button>
                 </Form>
               </Grid.Column>
+            </Grid.Row>
+            <Grid.Row>
+              {loadingNow()}
             </Grid.Row>
             <Grid.Row>
               {displayResponse()}
