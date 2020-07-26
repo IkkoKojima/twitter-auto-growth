@@ -25,6 +25,7 @@ export default function SignInOut() {
   const [credential, setCredential] = useState(undefined)
   const [message, setMessage] = useState(0)
   const [loading, setLoading] = useState(false)
+  const [favNum, setFavNum] = useState(10)
   // firebase.auth().onAuthStateChanged((user) => { user ? setUser(user) & console.log(user) : setUser(undefined) });
 
   // function signInWithTwitter() {
@@ -51,10 +52,10 @@ export default function SignInOut() {
     })
   }
 
-  async function autoFavorite(inputKeyword) {
-    if (inputKeyword && credential) {
+  async function autoFavorite(inputKeyword, num, token, secret) {
+    if (inputKeyword && num && token && secret) {
       setKeyword("")
-      const url = `${window.location.origin}/api/auto_favorites?keyword=${encodeURIComponent(inputKeyword)}&twitter_access_token_key=${credential.token}&twitter_access_token_secret=${credential.secret}`
+      const url = `${window.location.origin}/api/auto_favorites?keyword=${encodeURIComponent(inputKeyword)}&num=${num}&twitter_access_token_key=${token}&twitter_access_token_secret=${secret}`
       setLoading(true)
       const response = await fetch(url)
       if (response.ok) {
@@ -76,7 +77,6 @@ export default function SignInOut() {
           <Message.Header>
             キーワードを入力してください
               </Message.Header>
-          <p>最大で10件のツイートが自動いいねされます</p>
         </Message>
       )
     }
@@ -153,13 +153,24 @@ export default function SignInOut() {
               <Grid.Column>
                 {displayMessage()}
               </Grid.Column>
+            </Grid.Row>
+            <Grid.Row>
               <Grid.Column>
                 <Form>
                   <Form.Field>
-                    <label>いいねするキーワード</label>
+                    <label>自動いいねするキーワード</label>
                     <input type="text" value={keyword} onChange={(e) => { setKeyword(e.target.value) }} />
+                    <label>最大で{favNum}件のツイートが自動いいねされます</label>
+                    <input
+                      type='range'
+                      min={1}
+                      max={100}
+                      value={favNum}
+                      onChange={(e) => setFavNum(e.target.value)}
+                    />
+                    <label>アカウント凍結防止のために1ツイートあたり1~10秒のランダムクールタイムがあります</label>
                   </Form.Field>
-                  <Button color="twitter" onClick={() => { autoFavorite(keyword) }}>いいね</Button>
+                  <Button color="twitter" disabled={!keyword || loading} onClick={() => { autoFavorite(keyword, favNum, credential.token, credential.secret) }}>いいね</Button>
                 </Form>
               </Grid.Column>
             </Grid.Row>
